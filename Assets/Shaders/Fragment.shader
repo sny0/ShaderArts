@@ -1,4 +1,4 @@
-Shader "Unlit/Point"
+Shader "Unlit/Fragment"
 {
     Properties
     {
@@ -20,7 +20,7 @@ Shader "Unlit/Point"
             #include "UnityCG.cginc"
 
             #define PI 3.1415926535898
-            #define P_NUM 25
+            #define P_NUM 50
 
             struct appdata
             {
@@ -92,8 +92,8 @@ Shader "Unlit/Point"
                 }
 
                 for (int j = 0; j < P_NUM; j++) {
-                    p[j].x += (2 * step(0.5, frac(random(j))) - 1) * (floor(random(j) * 100) % 3 + 1) * _Time.y * 0.3;
-                    p[j].y += (2 * step(0.5, frac(random(j * -1))) - 1) * (floor(random(j*100) * 100) % 3 + 1) * _Time.y * 0.3;
+                    p[j].x += (2 * step(0.5, frac(random(j))) - 1) * (floor(random(j) * 100) % 3 + 1) * _Time.y * 0.02;
+                    p[j].y += (2 * step(0.5, frac(random(j * -1))) - 1) * (floor(random(j*100) * 100) % 3 + 1) * _Time.y * 0.02;
 
                     float2 tmp = (floor(p[j])) % 2;
                     tmp = (tmp + 2) % 2;
@@ -117,16 +117,11 @@ Shader "Unlit/Point"
                     ddd = min(ddd, dp);
                 }
 
-                float col = min(ddd * 2, 1);
-
-                //float4 col = float4(step(0, d) * step(d, 0.01), step(0, dd) * step(dd, 0.01), step(0, ddd) * step(ddd, 0.01), 1);
-
-                /*
                 float4 col = float4(0, 0, 0, 1);
                 if (index % 3 == 0) col += float4(1, 0, 0, 0) * (index % P_NUM + 1) / P_NUM;
                 if (index % 3 == 1) col += float4(0, 1, 0, 0) * (index % P_NUM + 1) / P_NUM;
                 if (index % 3 == 2) col += float4(0, 0, 1, 0) * (index % P_NUM + 1) / P_NUM;
-                */
+                
                 return col;
             }
             ENDCG

@@ -1,4 +1,4 @@
-Shader "Unlit/Distortion"
+Shader "Unlit/CoffeeMilk"
 {
     Properties
     {
@@ -46,18 +46,26 @@ Shader "Unlit/Distortion"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                i.uv *= 1 + 0.1 * sin(i.uv.x * 5 + _Time.y) + 0.1 * sin(i.uv.y * 3 + _Time.y);
+                i.uv -= 0.5;
+                i.uv *= 15 * pow(length(i.uv), 3);
+                i.uv += 0.5;
 
-                //i.uv -= 0.5;
-                //i.uv *= 1 + 15 * pow(length(i.uv), 1.5);
-                //i.uv += 0.5;
+                float dx = sin(i.uv.y * 20 - _Time.y * 1) * 0.05;
+                i.uv.x += dx;
                 
-                i.uv *= 3;
-                i.uv = frac(i.uv);
+                float dy = sin(i.uv.x * 20 - _Time.y * 1) * 0.05;
+                dy += cos(i.uv.y * 20 - _Time.y * 1) * 0.1;
+                i.uv.y += dy;
+                
+                float d = 0;
+                for (int j = -20; j < 30; j++) {
+                    d += step(j*0.1, i.uv.y) * step(i.uv.y, j*0.1 + 0.05);
+                }
+                
+                d = min(d, 1);
+                float4 col = lerp(float4(0.9, 0.9, 0.9, 1), float4(0.482, 0.333, 0.267, 1), d);
 
-                i.uv = i.uv * 2 - 1;
-                float d = step(-0.1, i.uv.x) * step(i.uv.x, 0.1) + step(-0.1, i.uv.y) * step(i.uv.y, 0.1);
-                return d;
+                return col;
             }
             ENDCG
         }

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Spirograph
+  m_Name: Spirograph2
   m_Shader: {fileID: 4800000, guid: ff5687899a9f3a346a6376e2241bf646, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -65,14 +65,14 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Length: 0.185
+    - _Length: 0.11
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Rc: 12
     - _Rd: 4
-    - _Rm: 2.5
+    - _Rm: 2.3
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
