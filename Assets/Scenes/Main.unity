@@ -1558,7 +1558,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1108091354
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1647,7 +1647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 2954a641c26850f48a2bfa48a151bdbe, type: 2}
+  m_Material: {fileID: 2100000, guid: 61f5e9830a44b4c4487736a741f134be, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1892,7 +1892,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 25aac2152e63bfa4eb3743592bae4471, type: 2}
   - {fileID: 2100000, guid: b1aabbc0367eb0f47a598690349f6b02, type: 2}
   - {fileID: 2100000, guid: eccb6c1ae5a007d46b865579f5d27def, type: 2}
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 61f5e9830a44b4c4487736a741f134be, type: 2}
   _images: {fileID: 2062121882}
   _backToListButton: {fileID: 736832960}
 --- !u!4 &1240935152
