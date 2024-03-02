@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CloverAndStar
+  m_Name: CloverAndStar0
   m_Shader: {fileID: 4800000, guid: 3662ef4725e6504468ec1fc0f0b21740, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []

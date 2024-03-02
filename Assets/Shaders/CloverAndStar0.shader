@@ -1,4 +1,4 @@
-Shader "Unlit/CloverAndStar"
+Shader "Unlit/CloverAndStar0"
 {
     Properties
     {
