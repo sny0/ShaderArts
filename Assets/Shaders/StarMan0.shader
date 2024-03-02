@@ -1,4 +1,4 @@
-Shader "Unlit/StarMan"
+Shader "Unlit/StarMan0"
 {
     Properties
     {
@@ -121,8 +121,8 @@ Shader "Unlit/StarMan"
 
                     float h = (masux * 1.0) / 20 + _Time.y * 0.1;
                     h = frac(h);
-                    float4 hsl = float4(h, 0.3, 0.5, 1);
-                    float4 col = hsl_to_rgb(hsl);
+                    float3 hsl = float3(h, 0.3, 0.5);
+                    float4 col = float4(hsl_to_rgb(hsl).xyz, 1);
                     return d * col;
                 }
                 ENDCG
