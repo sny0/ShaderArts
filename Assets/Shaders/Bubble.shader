@@ -1,4 +1,4 @@
-Shader "Unlit/test"
+Shader "Unlit/Bubble"
 {
     Properties
     {
@@ -51,34 +51,6 @@ Shader "Unlit/test"
                 return frac(sin(dot(st, float2(12.9898, 78.233))) * 43758.5453);
             }
 
-            float2 cartesian_to_polar(float x, float y) {
-                float r = sqrt(x * x + y * y);
-                float theta = atan2(y, x);
-
-                return float2(r, theta);
-            }
-
-            float2 polar_to_cartesian(float r, float theta) {
-                float x = r * cos(theta);
-                float y = r * sin(theta);
-
-                return float2(x, y);
-            }
-
-            float2 polar_multiplication(float r0, float theta0, float r1, float theta1) {
-                float new_r = r0 * r1;
-                float new_theta = theta0 + theta1;
-
-                return float2(new_r, new_theta);
-            }
-
-            float2 Rotate(float2 polarP0, float2 polarP1) {
-                float2 newPolarP = polar_multiplication(polarP0.x, polarP0.y, polarP1.x, polarP1.y);
-                float2 newCartesianP = polar_to_cartesian(newPolarP.x, newPolarP.y);
-
-                return newCartesianP;
-            }
-
             fixed4 hsl_to_rgb(float3 hsl)
             {
                 float H = hsl.x;
@@ -123,45 +95,16 @@ Shader "Unlit/test"
                 return v;
             }
 
-            float lines(float2 st, float b, float s) {
-                st *= s;
-                float v = smoothstep(0, 0.5 + b * 0.5, abs((sin(st.x * PI) + b * 2)) * 0.5);
-                return v;
-            }
-
-            
-            float fbm(float2 st, float oc, float la) {
-                const int octaves = oc;
-                float lacunarity = la;
-                float gain = 0.5;
-
-                float amplitude = 0.5;
-                float frequency = 3;
-
-                float v = 0;
-                for (int j = 0; j < octaves; j++) {
-                    v += amplitude * abs(noise(frequency * st) * 2 -1);
-                    frequency *= lacunarity;
-                    amplitude *= gain;
-                }
-
-                return v;
-            }
-
-
-            float clamp(float v, float minv, float maxv) {
-                return max(min(v, maxv), minv);
-            }
-
             fixed4 frag(v2f i) : SV_Target
             {
                 i.uv *= 25;
-                
+
                 float2 iv = floor(i.uv);
                 float2 fv = frac(i.uv);
 
                 float d = 10;
                 float d2 = 10;
+                float2 pp = float2(0, 0);
 
                 for (int y = -1; y <= 1; y++) {
                     for (int x = -1; x <= 1; x++) {
@@ -177,6 +120,7 @@ Shader "Unlit/test"
                         if (d > tmp_d) {
                             d2 = d;
                             d = tmp_d;
+                            pp = iv + neighbor;
                         }
                         else if (d2 > tmp_d) {
                             d2 = tmp_d;
@@ -191,9 +135,11 @@ Shader "Unlit/test"
 
                 d = step(0.5 * v, d);
 
-                //float4 col = a * float4(1, 0, 0, 1) + d * float4(1, 1, 1, 1);
-                return d;
-                
+                float3 hsl = float3(random(pp), 0.5, 0.5);
+                float4 col = float4(hsl_to_rgb(hsl).xyz * (1-d), 1);
+
+                return col;
+
             }
             ENDCG
         }
