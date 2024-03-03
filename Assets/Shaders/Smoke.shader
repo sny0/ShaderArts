@@ -1,12 +1,8 @@
-Shader "Unlit/LiquidNoise"
+Shader "Unlit/Smoke"
 {
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _ScaleX("Scale X", float) = 1
-        _ScaleY("Scale Y", float) = 1
-        _LineScale("Scale", float) = 1
-        _ColorIntensity("Color Intensity", float) = 0.5
     }
         SubShader
         {
@@ -40,11 +36,6 @@ Shader "Unlit/LiquidNoise"
 
                 sampler2D _MainTex;
                 float4 _MainTex_ST;
-
-                float _ScaleX;
-                float _ScaleY;
-                float _LineScale;
-                float _ColorIntensity;
 
                 v2f vert(appdata v)
                 {
@@ -88,38 +79,13 @@ Shader "Unlit/LiquidNoise"
                     return newCartesianP;
                 }
 
-                fixed4 hsl_to_rgb(float3 hsl)
-                {
-                    float H = hsl.x;
-                    float S = hsl.y;
-                    float L = hsl.z;
-
-                    float C = (1 - abs(2 * L - 1)) * S;
-                    float X = C * (1 - abs(fmod(H * 6, 2) - 1));
-                    float m = L - C / 2;
-
-                    float3 rgb;
-
-                    if (H < 1.0 / 6.0)
-                        rgb = float3(C, X, 0);
-                    else if (H < 2.0 / 6.0)
-                        rgb = float3(X, C, 0);
-                    else if (H < 3.0 / 6.0)
-                        rgb = float3(0, C, X);
-                    else if (H < 4.0 / 6.0)
-                        rgb = float3(0, X, C);
-                    else if (H < 5.0 / 6.0)
-                        rgb = float3(X, 0, C);
-                    else
-                        rgb = float3(C, 0, X);
-
-                    return float4(rgb + m, 1.0);
-                }
-
                 float noise(float2 st) {
                     float2 i = floor(st);
                     float2 f = frac(st);
                     float2 u = f * f * (3 - 2 * f);
+
+                    //float l = lerp(random(i), random(i + float2(1, 0)), u.x);
+                    //float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
 
                     float l = lerp(random(i), random(i + float2(1, 0)), u.x);
                     float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
@@ -135,21 +101,42 @@ Shader "Unlit/LiquidNoise"
                     return v;
                 }
 
+
+                float fbm(float2 st, float oc, float la) {
+                    const int octaves = oc;
+                    float lacunarity = la;
+                    float gain = 0.5;
+
+                    float amplitude = 0.5;
+                    float frequency = 3;
+
+                    float v = 0;
+                    for (int j = 0; j < octaves; j++) {
+                        v += amplitude * abs(noise(frequency * st) * 2 - 1);
+                        frequency *= lacunarity;
+                        amplitude *= gain;
+                    }
+
+                    return v;
+                }
+
+                float clamp(float v, float minv, float maxv) {
+                    return max(min(v, maxv), minv);
+                }
+
                 fixed4 frag(v2f i) : SV_Target
                 {
-                    i.uv.x *= _ScaleX;
-                    i.uv.y *= _ScaleY;
-
-                    float v = noise(i.uv + _Time.y * 0.2);
+                    float d = fbm(i.uv * 0.5 - _Time.y * 0.2, 10, 2.75);
 
                     float2 prePolarP0 = cartesian_to_polar(i.uv.x, i.uv.y);
-                    float2 prePolarP1 = float2(1, -1 * v);
+                    float2 prePolarP1 = float2(1, -1 * d + PI / 4);
 
                     i.uv = Rotate(prePolarP0, prePolarP1);
 
-                    float d = lines(i.uv, _ColorIntensity, _LineScale);
+                    d = lines(i.uv, 0.5, 20);
 
                     return d;
+
                 }
                 ENDCG
             }

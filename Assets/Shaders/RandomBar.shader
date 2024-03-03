@@ -19,7 +19,7 @@ Shader "Unlit/RandomBar"
 
             #include "UnityCG.cginc"
 
-                        #define PI 3.1415926535898
+            #define PI 3.1415926535898
 
             struct appdata
             {

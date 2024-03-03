@@ -23,7 +23,7 @@ Shader "Unlit/test"
 
             #include "UnityCG.cginc"
 
-                        #define PI 3.1415926535898
+            #define PI 3.1415926535898
 
             struct appdata
             {
@@ -121,6 +121,9 @@ Shader "Unlit/test"
                 float2 f = frac(st);
                 float2 u = f * f * (3 - 2 * f);
 
+                //float l = lerp(random(i), random(i + float2(1, 0)), u.x);
+                //float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
+
                 float l = lerp(random(i), random(i + float2(1, 0)), u.x);
                 float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
 
@@ -135,21 +138,43 @@ Shader "Unlit/test"
                 return v;
             }
 
+            
+            float fbm(float2 st, float oc, float la) {
+                const int octaves = oc;
+                float lacunarity = la;
+                float gain = 0.5;
+
+                float amplitude = 0.5;
+                float frequency = 3;
+
+                float v = 0;
+                for (int j = 0; j < octaves; j++) {
+                    v += amplitude * abs(noise(frequency * st) * 2 -1);
+                    frequency *= lacunarity;
+                    amplitude *= gain;
+                }
+
+                return v;
+            }
+
+
+            float clamp(float v, float minv, float maxv) {
+                return max(min(v, maxv), minv);
+            }
+
             fixed4 frag(v2f i) : SV_Target
             {
-                i.uv.x *= _ScaleX;
-                i.uv.y *= _ScaleY;
-
-                float v = noise(i.uv + _Time.y * 0.2);
+                float d = fbm(i.uv * 0.5 - _Time.y * 0.2, 10, 2.75);
 
                 float2 prePolarP0 = cartesian_to_polar(i.uv.x, i.uv.y);
-                float2 prePolarP1 = float2(1, -1 * v);
+                float2 prePolarP1 = float2(1, -1 * d + PI / 4);
 
                 i.uv = Rotate(prePolarP0, prePolarP1);
 
-                float d = lines(i.uv, _ColorIntensity, _LineScale);
+                d = lines(i.uv, 0.5, 20);
 
                 return d;
+                
             }
             ENDCG
         }

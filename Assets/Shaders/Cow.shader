@@ -1,12 +1,10 @@
-Shader "Unlit/LiquidNoise"
+Shader "Unlit/Cow"
 {
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
         _ScaleX("Scale X", float) = 1
         _ScaleY("Scale Y", float) = 1
-        _LineScale("Scale", float) = 1
-        _ColorIntensity("Color Intensity", float) = 0.5
     }
         SubShader
         {
@@ -43,8 +41,6 @@ Shader "Unlit/LiquidNoise"
 
                 float _ScaleX;
                 float _ScaleY;
-                float _LineScale;
-                float _ColorIntensity;
 
                 v2f vert(appdata v)
                 {
@@ -140,15 +136,10 @@ Shader "Unlit/LiquidNoise"
                     i.uv.x *= _ScaleX;
                     i.uv.y *= _ScaleY;
 
-                    float v = noise(i.uv + _Time.y * 0.2);
+                    i.uv += noise(i.uv) * 0.5 + _Time.y * 2;
+                    float v = noise(i.uv);
 
-                    float2 prePolarP0 = cartesian_to_polar(i.uv.x, i.uv.y);
-                    float2 prePolarP1 = float2(1, -1 * v);
-
-                    i.uv = Rotate(prePolarP0, prePolarP1);
-
-                    float d = lines(i.uv, _ColorIntensity, _LineScale);
-
+                    float d = step(0.5 + 0.25 * sin(_Time.y), v);
                     return d;
                 }
                 ENDCG

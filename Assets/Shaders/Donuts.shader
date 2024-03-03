@@ -1,12 +1,8 @@
-Shader "Unlit/LiquidNoise"
+Shader "Unlit/Donuts"
 {
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _ScaleX("Scale X", float) = 1
-        _ScaleY("Scale Y", float) = 1
-        _LineScale("Scale", float) = 1
-        _ColorIntensity("Color Intensity", float) = 0.5
     }
         SubShader
         {
@@ -41,11 +37,6 @@ Shader "Unlit/LiquidNoise"
                 sampler2D _MainTex;
                 float4 _MainTex_ST;
 
-                float _ScaleX;
-                float _ScaleY;
-                float _LineScale;
-                float _ColorIntensity;
-
                 v2f vert(appdata v)
                 {
                     v2f o;
@@ -58,34 +49,6 @@ Shader "Unlit/LiquidNoise"
                 float random(float2 st)
                 {
                     return frac(sin(dot(st, float2(12.9898, 78.233))) * 43758.5453);
-                }
-
-                float2 cartesian_to_polar(float x, float y) {
-                    float r = sqrt(x * x + y * y);
-                    float theta = atan2(y, x);
-
-                    return float2(r, theta);
-                }
-
-                float2 polar_to_cartesian(float r, float theta) {
-                    float x = r * cos(theta);
-                    float y = r * sin(theta);
-
-                    return float2(x, y);
-                }
-
-                float2 polar_multiplication(float r0, float theta0, float r1, float theta1) {
-                    float new_r = r0 * r1;
-                    float new_theta = theta0 + theta1;
-
-                    return float2(new_r, new_theta);
-                }
-
-                float2 Rotate(float2 polarP0, float2 polarP1) {
-                    float2 newPolarP = polar_multiplication(polarP0.x, polarP0.y, polarP1.x, polarP1.y);
-                    float2 newCartesianP = polar_to_cartesian(newPolarP.x, newPolarP.y);
-
-                    return newCartesianP;
                 }
 
                 fixed4 hsl_to_rgb(float3 hsl)
@@ -121,6 +84,9 @@ Shader "Unlit/LiquidNoise"
                     float2 f = frac(st);
                     float2 u = f * f * (3 - 2 * f);
 
+                    //float l = lerp(random(i), random(i + float2(1, 0)), u.x);
+                    //float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
+
                     float l = lerp(random(i), random(i + float2(1, 0)), u.x);
                     float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
 
@@ -137,19 +103,23 @@ Shader "Unlit/LiquidNoise"
 
                 fixed4 frag(v2f i) : SV_Target
                 {
-                    i.uv.x *= _ScaleX;
-                    i.uv.y *= _ScaleY;
+                    i.uv.x *= 1;
+                    i.uv.y *= 1;
 
-                    float v = noise(i.uv + _Time.y * 0.2);
+                    i.uv = 2 * i.uv - 1;
 
-                    float2 prePolarP0 = cartesian_to_polar(i.uv.x, i.uv.y);
-                    float2 prePolarP1 = float2(1, -1 * v);
+                    float r = 0.5 + 0.5 * noise(i.uv * 1.5 + _Time.y);
+                    float len = length(i.uv);
+                    float w = 0.3;
+                    float d = step(r - w, len) * step(len, r);
 
-                    i.uv = Rotate(prePolarP0, prePolarP1);
+                    float h = frac(r * 10);
+                    float s = lerp(0, 0.5, frac(r * _Time.y));
+                    float l = 0.5 * d;
+                    float3 hsl = float3(h, s, l);
+                    float4 col = float4(hsl_to_rgb(hsl).xyz, 1);
 
-                    float d = lines(i.uv, _ColorIntensity, _LineScale);
-
-                    return d;
+                    return col;
                 }
                 ENDCG
             }
