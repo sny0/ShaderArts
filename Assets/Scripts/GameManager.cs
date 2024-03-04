@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Button _backToListButton;
 
+    [SerializeField]
+    private GameObject _selectImageText;
+
     private int _selectedIndex = 0;
 
     private void Start()
@@ -32,6 +35,7 @@ public class GameManager : MonoBehaviour
 
         _meshRenderer.material = _materials[_selectedIndex];
         _images.SetActive(true);
+        _selectImageText.SetActive(true);
         _backToListButton.gameObject.SetActive(false);
     }
 
@@ -44,12 +48,14 @@ public class GameManager : MonoBehaviour
         _selectedIndex = value;
 
         _images.SetActive(false);
+        _selectImageText.SetActive(false);
         _backToListButton.gameObject.SetActive(true);
     }
 
     public void OnBackToListButtonClicked()
     {
         _images.SetActive(true);
+        _selectImageText.SetActive(true);
         _backToListButton.gameObject.SetActive(false);
     }
 }
