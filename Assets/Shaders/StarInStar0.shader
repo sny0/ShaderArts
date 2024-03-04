@@ -1,4 +1,4 @@
-Shader "Unlit/test"
+Shader "Unlit/StarInStar0"
 {
     Properties
     {
@@ -51,34 +51,6 @@ Shader "Unlit/test"
                 return frac(sin(dot(st, float2(12.9898, 78.233))) * 43758.5453);
             }
 
-            float2 cartesian_to_polar(float x, float y) {
-                float r = sqrt(x * x + y * y);
-                float theta = atan2(y, x);
-
-                return float2(r, theta);
-            }
-
-            float2 polar_to_cartesian(float r, float theta) {
-                float x = r * cos(theta);
-                float y = r * sin(theta);
-
-                return float2(x, y);
-            }
-
-            float2 polar_multiplication(float r0, float theta0, float r1, float theta1) {
-                float new_r = r0 * r1;
-                float new_theta = theta0 + theta1;
-
-                return float2(new_r, new_theta);
-            }
-
-            float2 Rotate(float2 polarP0, float2 polarP1) {
-                float2 newPolarP = polar_multiplication(polarP0.x, polarP0.y, polarP1.x, polarP1.y);
-                float2 newCartesianP = polar_to_cartesian(newPolarP.x, newPolarP.y);
-
-                return newCartesianP;
-            }
-
             fixed4 hsl_to_rgb(float3 hsl)
             {
                 float H = hsl.x;
@@ -123,36 +95,6 @@ Shader "Unlit/test"
                 return v;
             }
 
-            float lines(float2 st, float b, float s) {
-                st *= s;
-                float v = smoothstep(0, 0.5 + b * 0.5, abs((sin(st.x * PI) + b * 2)) * 0.5);
-                return v;
-            }
-
-            
-            float fbm(float2 st, float oc, float la) {
-                const int octaves = oc;
-                float lacunarity = la;
-                float gain = 0.5;
-
-                float amplitude = 0.5;
-                float frequency = 3;
-
-                float v = 0;
-                for (int j = 0; j < octaves; j++) {
-                    v += amplitude * abs(noise(frequency * st) * 2 -1);
-                    frequency *= lacunarity;
-                    amplitude *= gain;
-                }
-
-                return v;
-            }
-
-
-            float clamp(float v, float minv, float maxv) {
-                return max(min(v, maxv), minv);
-            }
-
             float isStar(float2 st, float scale) {
                 float theta = atan2(st.y, st.x);
                 float b = 0.5;
@@ -165,38 +107,35 @@ Shader "Unlit/test"
             }
 
             fixed4 frag(v2f i) : SV_Target
-            {   
+            {
+                i.uv -= 0.5;
+                i.uv *= 3 + 2.95 * sin(_Time.y);
+                i.uv += 0.5;
+
                 float2 iiv = floor(i.uv);
                 i.uv = frac(i.uv);
 
-                float2 scale = float2(11, 11);
+                float2 scale = float2(30, 30);
 
                 float2 st = i.uv;
                 st = 2 * st - 1;
 
-                i.uv -= 0.5;
-                i.uv *= 0.5 + scale * pow(length(i.uv), 1.2);
-                i.uv += 0.5;
-
-                i.uv *= scale;
+                i.uv *= 1 + scale * pow(length(i.uv), 0.5);
+                
                 float2 iv = floor(i.uv);
                 i.uv = frac(i.uv);
-                
+
                 float2 center = iv + float2(0.5, 0.5);
                 center = 2 * center / scale - 1;
 
                 i.uv = 2 * i.uv - 1;
 
-                float2 prePolarP0 = cartesian_to_polar(i.uv.x, i.uv.y);
-                float2 prePolarP1 = float2(1, -1 * _Time.y * 2);
+                float d = isStar(i.uv, 0.85);
 
-                i.uv = Rotate(prePolarP0, prePolarP1);
-                float d = isStar(i.uv, 0.8);
+                float star = isStar(center, 0.8 * pow(3, 2 + 1.999 * sin(_Time.y - 3 * random(iiv))));
 
-                float star = isStar(center, 0.15 * pow(3, 2 + 1.9 * sin(_Time.y*2 - 3 * random(iiv))));
-
-                float h = 0.125 + 0.1 * random(iv);
-                float3 hsl = float3(h, 1, 0.5);
+                float h = random(iiv * PI);
+                float3 hsl = float3(h, 0.8, 0.5);
                 float4 col = lerp(0, float4(hsl_to_rgb(hsl).xyz, 1), d * star);
                 return col;
             }

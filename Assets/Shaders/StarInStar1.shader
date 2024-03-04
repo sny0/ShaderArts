@@ -1,4 +1,4 @@
-Shader "Unlit/test"
+Shader "Unlit/StarInStar1"
 {
     Properties
     {
@@ -107,52 +107,6 @@ Shader "Unlit/test"
                 return float4(rgb + m, 1.0);
             }
 
-            float noise(float2 st) {
-                float2 i = floor(st);
-                float2 f = frac(st);
-                float2 u = f * f * (3 - 2 * f);
-
-                //float l = lerp(random(i), random(i + float2(1, 0)), u.x);
-                //float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
-
-                float l = lerp(random(i), random(i + float2(1, 0)), u.x);
-                float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
-
-                float v = lerp(l, r, u.y);
-
-                return v;
-            }
-
-            float lines(float2 st, float b, float s) {
-                st *= s;
-                float v = smoothstep(0, 0.5 + b * 0.5, abs((sin(st.x * PI) + b * 2)) * 0.5);
-                return v;
-            }
-
-            
-            float fbm(float2 st, float oc, float la) {
-                const int octaves = oc;
-                float lacunarity = la;
-                float gain = 0.5;
-
-                float amplitude = 0.5;
-                float frequency = 3;
-
-                float v = 0;
-                for (int j = 0; j < octaves; j++) {
-                    v += amplitude * abs(noise(frequency * st) * 2 -1);
-                    frequency *= lacunarity;
-                    amplitude *= gain;
-                }
-
-                return v;
-            }
-
-
-            float clamp(float v, float minv, float maxv) {
-                return max(min(v, maxv), minv);
-            }
-
             float isStar(float2 st, float scale) {
                 float theta = atan2(st.y, st.x);
                 float b = 0.5;
@@ -165,7 +119,7 @@ Shader "Unlit/test"
             }
 
             fixed4 frag(v2f i) : SV_Target
-            {   
+            {
                 float2 iiv = floor(i.uv);
                 i.uv = frac(i.uv);
 
@@ -181,7 +135,7 @@ Shader "Unlit/test"
                 i.uv *= scale;
                 float2 iv = floor(i.uv);
                 i.uv = frac(i.uv);
-                
+
                 float2 center = iv + float2(0.5, 0.5);
                 center = 2 * center / scale - 1;
 
@@ -193,7 +147,7 @@ Shader "Unlit/test"
                 i.uv = Rotate(prePolarP0, prePolarP1);
                 float d = isStar(i.uv, 0.8);
 
-                float star = isStar(center, 0.15 * pow(3, 2 + 1.9 * sin(_Time.y*2 - 3 * random(iiv))));
+                float star = isStar(center, 0.15 * pow(3, 2 + 1.9 * sin(_Time.y * 2 - 3 * random(iiv))));
 
                 float h = 0.125 + 0.1 * random(iv);
                 float3 hsl = float3(h, 1, 0.5);
