@@ -1,4 +1,4 @@
-Shader "Unlit/test"
+Shader "Unlit/SomethingChaos"
 {
     Properties
     {
@@ -79,80 +79,6 @@ Shader "Unlit/test"
                 return newCartesianP;
             }
 
-            fixed4 hsl_to_rgb(float3 hsl)
-            {
-                float H = hsl.x;
-                float S = hsl.y;
-                float L = hsl.z;
-
-                float C = (1 - abs(2 * L - 1)) * S;
-                float X = C * (1 - abs(fmod(H * 6, 2) - 1));
-                float m = L - C / 2;
-
-                float3 rgb;
-
-                if (H < 1.0 / 6.0)
-                    rgb = float3(C, X, 0);
-                else if (H < 2.0 / 6.0)
-                    rgb = float3(X, C, 0);
-                else if (H < 3.0 / 6.0)
-                    rgb = float3(0, C, X);
-                else if (H < 4.0 / 6.0)
-                    rgb = float3(0, X, C);
-                else if (H < 5.0 / 6.0)
-                    rgb = float3(X, 0, C);
-                else
-                    rgb = float3(C, 0, X);
-
-                return float4(rgb + m, 1.0);
-            }
-
-            float noise(float2 st) {
-                float2 i = floor(st);
-                float2 f = frac(st);
-                float2 u = f * f * (3 - 2 * f);
-
-                //float l = lerp(random(i), random(i + float2(1, 0)), u.x);
-                //float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
-
-                float l = lerp(random(i), random(i + float2(1, 0)), u.x);
-                float r = lerp(random(i + float2(0, 1)), random(i + float2(1, 1)), u.x);
-
-                float v = lerp(l, r, u.y);
-
-                return v;
-            }
-
-            float lines(float2 st, float b, float s) {
-                st *= s;
-                float v = smoothstep(0, 0.5 + b * 0.5, abs((sin(st.x * PI) + b * 2)) * 0.5);
-                return v;
-            }
-
-            
-            float fbm(float2 st, float oc, float la) {
-                const int octaves = oc;
-                float lacunarity = la;
-                float gain = 0.5;
-
-                float amplitude = 0.5;
-                float frequency = 3;
-
-                float v = 0;
-                for (int j = 0; j < octaves; j++) {
-                    v += amplitude * abs(noise(frequency * st) * 2 -1);
-                    frequency *= lacunarity;
-                    amplitude *= gain;
-                }
-
-                return v;
-            }
-
-
-            float clamp(float v, float minv, float maxv) {
-                return max(min(v, maxv), minv);
-            }
-
             float isStar(float2 st, float scale) {
                 float theta = atan2(st.y, st.x);
                 float b = 0.5;
@@ -175,10 +101,6 @@ Shader "Unlit/test"
 
                 float wave = pow(sin(length(st) * 5 - _Time.y * 0.5), 2);
 
-                float maxRadius = 1;
-
-                //float r = length(i.uv);
-
                 for (int j = 0; j < 2; j++) {
                     float2 p = cartesian_to_polar(i.uv.x, i.uv.y);
 
@@ -193,17 +115,13 @@ Shader "Unlit/test"
                 i.uv = 2 * i.uv - 1;
 
                 float d = abs(sin(length(i.uv)));
-                
+
                 float2 masuPhase = (iv + 100) % 10;
                 masuPhase / 10;
 
                 masuPhase = max(masuPhase.x, masuPhase.y);
 
                 float threshold[3];
-                //threshold[0] = 0.5 + 0.5 * sin(_Time.y + masuPhase);
-                //threshold[1] = 0.5 + 0.5 * sin(_Time.y * 3 + PI / 4 + masuPhase);
-                //threshold[2] = 0.5 + 0.5 * sin(_Time.y * 5 + 3 * PI / 4 + masuPhase);
-                //threshold *= 1.4142;
                 threshold[0] = 0.5 + 0.5 * sin(_Time.y);
                 threshold[1] = 0.5 + 0.5 * sin(_Time.y * 3 + PI / 4);
                 threshold[2] = 0.5 + 0.5 * sin(_Time.y * 5 + 3 * PI / 4);
@@ -215,7 +133,7 @@ Shader "Unlit/test"
                 b[0] = step(abs(i.uv.x), threshold[2]) * step(abs(i.uv.y), threshold[2]);
 
 
-                r[1] = isStar(i.uv, threshold[0] +0.5);
+                r[1] = isStar(i.uv, threshold[0] + 0.5);
                 g[1] = isStar(i.uv, threshold[1] + 0.5);
                 b[1] = isStar(i.uv, threshold[2] + 0.5);
 
