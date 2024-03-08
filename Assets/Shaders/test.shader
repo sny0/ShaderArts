@@ -164,66 +164,61 @@ Shader "Unlit/test"
                 return d;
             }
 
+            float2 comPow(float2 z, float n) {
+                float r = length(z);
+                float theta = 0;
+                if (z.x != 0) {
+                    theta = atan2(z.y, z.x);
+                    theta += PI;
+                }
+
+                float2 ans;
+                ans.x = pow(r, n) * cos(n * theta);
+                ans.y = pow(r, n) * sin(n * theta);
+
+                return ans;
+            }
+
             float func(float x) {
-                return x * x * (2. * x + 3.) / 3.;
+                return x * x * (3 - 2*x);
+            }
+
+            //if st = float2(0, 0) then Mandelbrot Set
+            float mandelbrotSet(float2 st, float2 c, float e) {
+                int i;
+                for (i = 0; i < 500; i++){
+                    if (length(st) > 2.) {
+                        return i * 1. / 7;
+                    }
+                    float2 preSt = st;
+                    st = comPow(preSt, e) + c;
+                }
+                return 0;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                i.uv = 2 * i.uv - 1;
-                float2 st = i.uv;
+                float scale = 2 / _Time.y;
+                i.uv = scale * i.uv - scale / 2;
 
-                float wave = pow(sin(length(st) * 5 - _Time.y * 0.5), 2);
+                float2 offset = float2(0.333, 0.75);
+                i.uv += offset * _Time.y;
 
-                float maxRadius = 1;
+                float2 c = float2(-0.3, -0.63);
+                float f1 = floor(_Time.y / 6);
+                float f2 = f1 % 2;
+                float e = lerp(4 + _Time.y % 6, 10 - _Time.y % 6, f2);
+                float d = mandelbrotSet(0, i.uv, 2);
 
-                //float r = length(i.uv);
-
-                for (int j = 0; j < 2; j++) {
-                    float2 p = cartesian_to_polar(i.uv.x, i.uv.y);
-
-                    i.uv = polar_to_cartesian(func(p.x), p.y);
+                if (d == 0) {
+                    return 0;
                 }
 
-                i.uv = (i.uv + 1.) / 2.;
-                i.uv *= 3;
-                float2 iv = floor(i.uv);
-                i.uv = frac(i.uv);
+                float col_r = 0.5 + sin(d * 2 * PI) / 2;
+                float col_g = 0.5 + sin(d * 2 * PI + PI / 3) / 2;
+                float col_b = 0.5 + sin(d * 2 * PI + PI / 4) / 2;
 
-                i.uv = 2 * i.uv - 1;
-
-                float d = abs(sin(length(i.uv)));
-                
-                float2 masuPhase = (iv + 100) % 10;
-                masuPhase / 10;
-
-                masuPhase = max(masuPhase.x, masuPhase.y);
-
-                float threshold[3];
-                //threshold[0] = 0.5 + 0.5 * sin(_Time.y + masuPhase);
-                //threshold[1] = 0.5 + 0.5 * sin(_Time.y * 3 + PI / 4 + masuPhase);
-                //threshold[2] = 0.5 + 0.5 * sin(_Time.y * 5 + 3 * PI / 4 + masuPhase);
-                //threshold *= 1.4142;
-                threshold[0] = 0.5 + 0.5 * sin(_Time.y);
-                threshold[1] = 0.5 + 0.5 * sin(_Time.y * 3 + PI / 4);
-                threshold[2] = 0.5 + 0.5 * sin(_Time.y * 5 + 3 * PI / 4);
-
-                float r[2], g[2], b[2];
-
-                r[0] = step(abs(i.uv.x), threshold[0]) * step(abs(i.uv.y), threshold[0]);
-                g[0] = step(abs(i.uv.x), threshold[1]) * step(abs(i.uv.y), threshold[1]);
-                b[0] = step(abs(i.uv.x), threshold[2]) * step(abs(i.uv.y), threshold[2]);
-
-
-                r[1] = isStar(i.uv, threshold[0] +0.5);
-                g[1] = isStar(i.uv, threshold[1] + 0.5);
-                b[1] = isStar(i.uv, threshold[2] + 0.5);
-
-                float4 squareCol = float4(r[0], g[0], b[0], 1);
-                float4 StarCol = float4(r[1], g[1], b[1], 1);
-
-                float4 col = lerp(squareCol, StarCol, wave);
-
+                float4 col = float4(col_r, col_g, col_b, 1);
                 return col;
             }
             ENDCG
