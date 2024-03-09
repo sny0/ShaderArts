@@ -7121,7 +7121,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &965064095
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8615,8 +8615,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 6ec5c238d9dca2643a28b1ac7c7748de, type: 2}
   - {fileID: 2100000, guid: 49de6d1c7699bb147865dfd0283c0d91, type: 2}
   - {fileID: 2100000, guid: 2bf42d0e0d55656438ef0d2e977d8b45, type: 2}
-  - {fileID: 2100000, guid: 49de6d1c7699bb147865dfd0283c0d91, type: 2}
-  - {fileID: 2100000, guid: 49de6d1c7699bb147865dfd0283c0d91, type: 2}
+  - {fileID: 2100000, guid: 1e21be65085b2244488afec38160e4fe, type: 2}
+  - {fileID: 2100000, guid: 208fc5ac981cc5e4da732cf29fa90906, type: 2}
   - {fileID: 2100000, guid: 49de6d1c7699bb147865dfd0283c0d91, type: 2}
   - {fileID: 2100000, guid: 49de6d1c7699bb147865dfd0283c0d91, type: 2}
   - {fileID: 2100000, guid: 49de6d1c7699bb147865dfd0283c0d91, type: 2}
@@ -11543,7 +11543,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1737029874
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11976,7 +11976,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 270a85ad203665849a9729de30d1f140, type: 2}
+  m_Material: {fileID: 2100000, guid: 208fc5ac981cc5e4da732cf29fa90906, type: 2}
   m_Color: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -13161,7 +13161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: acac7fea5b503d54c84c42242e955613, type: 2}
+  m_Material: {fileID: 2100000, guid: 1e21be65085b2244488afec38160e4fe, type: 2}
   m_Color: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}

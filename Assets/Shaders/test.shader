@@ -212,17 +212,14 @@ Shader "Unlit/test"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                float scale = 2.5;// / _Time.y;
+                float scale = 2.5;
                 i.uv = scale * i.uv - scale / 2;
-
-                float2 offset = float2(0.333, 0.75);
-                //i.uv += offset * _Time.y;
-
-                float2 c = float2(-0.35 + 0.05 * sin(_Time.y * 0.4), 0.65 + 0.05 * sin(_Time.y * 0.8 + PI));
-                float f1 = floor(_Time.y / 6);
+                float2 c = float2(-0.3, -0.63);
+                float t = _Time.y * 0.1;
+                float f1 = floor(t / 4);
                 float f2 = f1 % 2;
-                float e = lerp(4 + _Time.y % 6, 10 - _Time.y % 6, f2);
-                float2 d = mandelbrotSet(i.uv, c, 2);
+                float e = lerp(1 + t % 4, 5 - t % 4, f2);
+                float2 d = mandelbrotSet(i.uv, c, e);
 
                 float4 col;
 
