@@ -165,6 +165,7 @@ Shader "Unlit/test"
             }
 
             float2 comPow(float2 z, float n) {
+                z.y *= -1;
                 float r = length(z);
                 float theta = 0;
                 if (z.x != 0) {
@@ -202,7 +203,7 @@ Shader "Unlit/test"
                 i.uv = scale * i.uv - scale / 2;
 
                 float2 offset = float2(0.333, 0.75);
-                i.uv += offset * _Time.y;
+                //i.uv += offset * _Time.y;
 
                 float2 c = float2(-0.3, -0.63);
                 float f1 = floor(_Time.y / 6);
