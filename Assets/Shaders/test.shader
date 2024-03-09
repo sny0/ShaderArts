@@ -165,7 +165,6 @@ Shader "Unlit/test"
             }
 
             float2 comPow(float2 z, float n) {
-                z.y *= -1;
                 float r = length(z);
                 float theta = 0;
                 if (z.x != 0) {
@@ -185,42 +184,61 @@ Shader "Unlit/test"
             }
 
             //if st = float2(0, 0) then Mandelbrot Set
-            float mandelbrotSet(float2 st, float2 c, float e) {
+            float2 mandelbrotSet(float2 st, float2 c, float e) {
                 int i;
-                for (i = 0; i < 500; i++){
+                for (i = 0; i < 500; i++) {
                     if (length(st) > 2.) {
-                        return i * 1. / 7;
+                        break;
                     }
                     float2 preSt = st;
                     st = comPow(preSt, e) + c;
                 }
-                return 0;
+
+                int wari = 5;
+
+                if (st.x >= 0 && st.y >= 0) {
+                    return float2(0, i * 1.0 / wari);
+                }
+                else if (st.x >= 0 && st.y < 0) {
+                    return float2(1, i * 1.0 / wari);
+                }
+                else if (st.x < 0 && st.y >= 0) {
+                    return float2(2, i * 1.0 / wari);
+                }
+                else {
+                    return float2(3, i * 1.0 / wari);
+                }
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                float scale = 2 / _Time.y;
+                float scale = 2.5;// / _Time.y;
                 i.uv = scale * i.uv - scale / 2;
 
                 float2 offset = float2(0.333, 0.75);
                 //i.uv += offset * _Time.y;
 
-                float2 c = float2(-0.3, -0.63);
+                float2 c = float2(-0.35 + 0.05 * sin(_Time.y * 0.4), 0.65 + 0.05 * sin(_Time.y * 0.8 + PI));
                 float f1 = floor(_Time.y / 6);
                 float f2 = f1 % 2;
                 float e = lerp(4 + _Time.y % 6, 10 - _Time.y % 6, f2);
-                float d = mandelbrotSet(0, i.uv, 2);
+                float2 d = mandelbrotSet(i.uv, c, 2);
 
-                if (d == 0) {
-                    return 0;
+                float4 col;
+
+                if (d.x == 0) {
+                    col = float4(1, 0, 0, 1);
                 }
-
-                float col_r = 0.5 + sin(d * 2 * PI) / 2;
-                float col_g = 0.5 + sin(d * 2 * PI + PI / 3) / 2;
-                float col_b = 0.5 + sin(d * 2 * PI + PI / 4) / 2;
-
-                float4 col = float4(col_r, col_g, col_b, 1);
-                return col;
+                else if (d.x == 1) {
+                    col = float4(0.5, 0.5, 0, 1);
+                }
+                else if (d.x == 2) {
+                    col = float4(0, 1, 0, 1);
+                }
+                else {
+                    col = float4(0, 0.5, 0.5, 1);
+                }
+                return col * d.y;
             }
             ENDCG
         }
