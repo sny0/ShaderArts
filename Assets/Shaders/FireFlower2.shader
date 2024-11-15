@@ -1,4 +1,4 @@
-Shader "Unlit/test"
+Shader "Unlit/FireFlower2"
 {
     Properties
     {
@@ -129,7 +129,7 @@ Shader "Unlit/test"
                 return v;
             }
 
-            
+
             float fbm(float2 st, float oc, float la) {
                 const int octaves = oc;
                 float lacunarity = la;
@@ -140,7 +140,7 @@ Shader "Unlit/test"
 
                 float v = 0;
                 for (int j = 0; j < octaves; j++) {
-                    v += amplitude * abs(noise(frequency * st) * 2 -1);
+                    v += amplitude * abs(noise(frequency * st) * 2 - 1);
                     frequency *= lacunarity;
                     amplitude *= gain;
                 }
@@ -180,7 +180,7 @@ Shader "Unlit/test"
             }
 
             float func(float x) {
-                return x * x * (3 - 2*x);
+                return x * x * (3 - 2 * x);
             }
 
             //if st = float2(0, 0) then Mandelbrot Set
@@ -223,8 +223,8 @@ Shader "Unlit/test"
 
               ///int w = min(ist.x, ist.y);
               int v = (ist.x + ist.y + 10) % 5;
-              float h = _Time.y * .5 + (v/5.);
-              float s = 0.5 + 0.5 * sin(_Time.y * 5 + (v * PI/5));
+              float h = _Time.y * .5 + (v / 5.);
+              float s = 0.5 + 0.5 * sin(_Time.y * 5 + (v * PI / 5));
               h = frac(h);
               s = frac(s);
               float3 hsl = float3(h, s, 0.5);
