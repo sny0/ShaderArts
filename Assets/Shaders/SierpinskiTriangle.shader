@@ -1,4 +1,4 @@
-﻿Shader "Unlit/test"
+﻿Shader "Unlit/SierpinskiTriangle"
 {
     Properties
     {
@@ -129,7 +129,7 @@
                 return v;
             }
 
-            
+
             float fbm(float2 st, float oc, float la) {
                 const int octaves = oc;
                 float lacunarity = la;
@@ -140,7 +140,7 @@
 
                 float v = 0;
                 for (int j = 0; j < octaves; j++) {
-                    v += amplitude * abs(noise(frequency * st) * 2 -1);
+                    v += amplitude * abs(noise(frequency * st) * 2 - 1);
                     frequency *= lacunarity;
                     amplitude *= gain;
                 }
@@ -180,7 +180,7 @@
             }
 
             float func(float x) {
-                return x * x * (3 - 2*x);
+                return x * x * (3 - 2 * x);
             }
 
             //if st = float2(0, 0) then Mandelbrot Set
@@ -205,55 +205,40 @@
                 return b;
             }
 
-            float levyCurve(float2 uv, int iter)
+            bool isInSierpinski(float2 uv, int iter)
             {
-                float2 p = uv * 2.0 - 1.0;
-                float angle = 0.0;
-
                 for (int i = 0; i < iter; i++)
                 {
-                    if (p.x * p.y < 0.0)
-                        angle += 0.7854; // π/4
-                    else
-                        angle -= 0.7854;
-                    p = float2(cos(angle), sin(angle));
+                    if (uv.x > 0.5 && uv.y < 0.5)
+                        return false;
+                    uv = frac(uv * 2.0);
                 }
-
-                return length(p);
+                return true;
             }
 
-            float4 frag(v2f i) : SV_Target
+            fixed4 frag(v2f i) : SV_Target
             {
-                float2 uv = i.uv * 2.0 - 1.0; // [-1,1] に正規化
-                uv *= 4.0; // 拡大
+                //i.uv = i.uv * 2 - 1;
+                float t = _Time.y * 2.0;
+                float wave = abs(fmod(t, 18.0) - 9.0);
+                int iterCount = 1 + int(wave); // 1〜10〜1
 
-                float2 pos = uv;
-                float angle = 0.0;
+                float2 uv = frac(i.uv * float2(1, 1));
+                float2 uv90 = float2(uv.y, 1.0 - uv.x);
+                float2 uv270 = float2(1.0 - uv.y, uv.x);
+                float4 col = float4(0.0, 0.0, 0.0, 1.0);
 
-                for (int i = 0; i < 15; i++)
-                {
-                    if (pos.x > 0.0 && pos.y > 0.0)
-                        angle += 0.5;
-                    else
-                        angle -= 0.5;
+                if (isInSierpinski(uv, iterCount))
+                    col += float4(1.0, 0.0, 0.0, 0.0);
+                if (isInSierpinski(uv90, iterCount))
+                    col += float4(0.0, 1.0, 0.0, 0.0);
+                if (isInSierpinski(uv270, iterCount))
+                    col += float4(0.0, 0.0, 1.0, 0.0);
 
-                    float cs = cos(angle);
-                    float sn = sin(angle);
-                    pos = float2(
-                        cs * pos.x - sn * pos.y,
-                        sn * pos.x + cs * pos.y
-                    );
-
-                    pos = frac(pos + 0.5) - 0.5;
-                }
-
-                float d = length(pos);
-                float brightness = smoothstep(0.02, 0.0, d);
-                return float4(brightness, brightness, brightness, 1.0);
+                return col;
             }
-
-
             ENDCG
         }
     }
 }
+
